@@ -11,25 +11,29 @@ contract ULSOperator is Ownable {
 
     mapping (address user => uint256 balance) public balances;
     uint256 public ratio = 100;
+    address public masterWallet;
     error RefererNotFound(address referer);
-
+    error AlreadyRefered();
     mapping (address user => address referer) public refers;
     mapping (address referer => bool) public users;
 
-
-    constructor(address _payToken, address _ulsToken, address masterWallet) Ownable(msg.sender) {
+    constructor(address _payToken, address _masterWallet) Ownable(msg.sender) {
         paymentToken = IERC20(_payToken);
+        refers[_masterWallet] = address(0);
+        users[_masterWallet] = true;
+    }
+
+    function setULSToken(address _ulsToken) public onlyOwner {
         ulstoken = IULSToken(_ulsToken);
-        refers[masterWallet] = address(0);
-        users[masterWallet] = true;
+        ulstoken.addChild(address(0), masterWallet);
+    }
+
+    function setRatio(uint256 _ratio) public onlyOwner {
+        ratio = _ratio;
     }
 
     function getReferrer(address user) public view returns (address) {
         return refers[user];
-    }
-
-    function setReferrer(address referer) public {
-        refers[msg.sender] = referer;
     }
 
     function splitFunds(address to, uint256 amount) private {
@@ -46,6 +50,8 @@ contract ULSOperator is Ownable {
     }
 
     function purchase(address referer, uint256 amount) public {
+        if (refers[msg.sender] != address(0)) revert AlreadyRefered();
+        refers[msg.sender] = referer;
         if (referer == address(0)) revert RefererNotFound(referer);
         if (users[referer] == false) revert RefererNotFound(referer);
         if (!paymentToken.approve(msg.sender, amount)) revert("Not enough funds");
