@@ -14,8 +14,8 @@ contract ULSToken is ERC721, IULSToken, Ownable {
     mapping (uint256 tokenId => uint256 state) public states;
     mapping (address user => uint256 corespondingTokenId) public reverseId;
 
-    constructor(string memory _baseURI, string memory _name, string memory _symbol, address operator) ERC721(_name, _symbol) Ownable(operator) {
-        _baseURIString = _baseURI;
+    constructor(string memory _uri, string memory _name, string memory _symbol, address operator) ERC721(_name, _symbol) Ownable(operator) {
+        _baseURIString = _uri;
     }
 
     function _baseURI() internal view override returns (string memory) {
@@ -40,7 +40,7 @@ contract ULSToken is ERC721, IULSToken, Ownable {
 
     function addChild(address parent, address child) public onlyOwner { 
         string memory childIdentifier = ULSsafeMint(child);
-        if (reverseId[parent] == 0) revert ParentDoesNotExist(parent);
+        if (reverseId[parent] == 0 && parent != address(0)) revert ParentDoesNotExist(parent);
         // emit an event for the backend to fetch & update the uri
         ++states[reverseId[parent]];
         string memory parentIdentifier = tokenURI(reverseId[parent]);
