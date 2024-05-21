@@ -11,11 +11,10 @@ type MetadataChange = {
     parentIdentifier: string
 }
 
-const _provider = new ethers.providers.WebSocketProvider(
+const provider = new ethers.providers.WebSocketProvider(
     `wss://sepolia.infura.io/ws/v3/${process.env.api}`
 );
 
-const provider = new ethers.Wallet(process.env.pk, _provider);
 const deployedAddress = '0x4319Da6D5641f93c607e6f903cD00cB55773E1bC';
 const ulsOperator = new ethers.Contract(deployedAddress, abi, provider);
 ulsOperator.on('AddChild', metadataChanged);
