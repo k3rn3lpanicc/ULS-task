@@ -39,6 +39,12 @@ Where you can see the deployed contract addresses. Payment token contract is for
 
 First, cd into the backend folder, run the `npm install` command, and then you can simply run `npm run start` command to start the backend of this project.
 
+Remember to create the `.env` file in this folder too and fill it like this:
+
+```
+api=<your infura project id here>
+```
+
 You should see `app started...` on your terminal.
 
 The backend consists of 2 parts: event listener and metadata writer. The event listener part listens for events in the blockchain whenever a client purchases and becomes children of a referer. It catches the data from blockchain and interacts with the second part which is responsible for writing new metadatas into the disk and serve them to users as token uris. Also the backend has a buffer of changes which will process it every 30 seconds.
