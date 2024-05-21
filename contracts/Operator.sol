@@ -37,6 +37,7 @@ contract ULSOperator is Ownable {
     }
 
     function splitFunds(address to, uint256 amount) private {
+        uint256 remainingAmount = amount - amount * ratio / 10000;
         uint256 totalAmountDistributed = amount * ratio / 10000;
         while (to != address(0)){
             balances[to] += totalAmountDistributed;
@@ -47,6 +48,8 @@ contract ULSOperator is Ownable {
             }
             to = refers[to];
         }
+
+        balances[masterWallet] += remainingAmount; // TODO: check with them
     }
 
     function purchase(address referer, uint256 amount) public {
