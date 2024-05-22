@@ -1,7 +1,8 @@
 {
     "name": "hardhat-project",
     "scripts": {
-        "deploy": "npx hardhat run deploy/deploy.ts --network sepolia"
+        "deploy": "npx hardhat run deploy/deploy.ts --network sepolia",
+        "test": "npx hardhat test"
     },
     "devDependencies": {
         "@nomicfoundation/hardhat-toolbox": "^5.0.0",
