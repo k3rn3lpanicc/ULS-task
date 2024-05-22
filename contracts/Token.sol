@@ -5,6 +5,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./IULSToken.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+
 
 contract ULSToken is ERC721, IULSToken, Ownable {
     
@@ -25,9 +27,9 @@ contract ULSToken is ERC721, IULSToken, Ownable {
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         if (tokenId == 0) return string("");
         // hash tokenId and its coresponding state into a uint256 number called identifier
-        bytes32 identifier = keccak256(abi.encodePacked(tokenId, states[tokenId]));
+        uint256 identifier = uint256(keccak256(abi.encodePacked(tokenId, states[tokenId])));
         // convert the uint256 number into a string
-        return string(abi.encodePacked(_baseURI(), "/", identifier, ".json"));
+        return string.concat(_baseURI(), "/", Strings.toHexString(identifier), ".json");
     }
 
     function ULSsafeMint(address to) private returns (string memory) {
