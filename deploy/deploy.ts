@@ -1,6 +1,8 @@
 import { ethers } from 'hardhat';
 
 async function main() {
+    const remainingFundsWallet = "";
+    const masterWallet = '0x2cBFC23A609a34AafB7DDA667dbA883f9f224571';
     console.log('[ 👾 ] Initializing...');
     console.log(
         `[ 👾 ] Deploying to chain: ${
@@ -13,7 +15,7 @@ async function main() {
     console.log(`[ 👾 ] PaymentToken Deployed to: ${await paymentToken.getAddress()}`);
 
     const ULSOperator = await ethers.getContractFactory('ULSOperator');
-    const ulsOperator = await ULSOperator.deploy(await paymentToken.getAddress(), "0x2cBFC23A609a34AafB7DDA667dbA883f9f224571");
+    const ulsOperator = await ULSOperator.deploy(await paymentToken.getAddress(), masterWallet, remainingFundsWallet);
     console.log(`[ 👾 ] ULSOperator Deployed to: ${await ulsOperator.getAddress()}`);
 
     const ULSToken = await ethers.getContractFactory('ULSToken');
