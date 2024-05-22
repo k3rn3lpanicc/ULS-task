@@ -12,15 +12,19 @@ contract ULSOperator is Ownable {
     mapping (address user => uint256 balance) public balances;
     uint256 public ratio = 100;
     address public masterWallet;
+    address public remainingFundsWallet;
     error RefererNotFound(address referer);
     error AlreadyRefered();
+    error SmallAmount();
     mapping (address user => address referer) public refers;
     mapping (address referer => bool) public users;
 
-    constructor(address _payToken, address _masterWallet) Ownable(msg.sender) {
+    constructor(address _payToken, address _masterWallet, address _remainingFunds) Ownable(msg.sender) {
         paymentToken = IERC20(_payToken);
+        masterWallet = _masterWallet;
         refers[_masterWallet] = address(0);
         users[_masterWallet] = true;
+        remainingFundsWallet = _remainingFunds;
     }
 
     function setULSToken(address _ulsToken) public onlyOwner {
@@ -36,10 +40,11 @@ contract ULSOperator is Ownable {
         return refers[user];
     }
 
-    function splitFunds(address to, uint256 amount) private {
+    function splitFunds(address from, address to, uint256 amount) private {
         uint256 remainingAmount = amount - amount * ratio / 10000;
         uint256 totalAmountDistributed = amount * ratio / 10000;
         while (to != address(0)){
+            if (to == from) revert AlreadyRefered();
             balances[to] += totalAmountDistributed;
             balances[to] -= (totalAmountDistributed * ratio) / 10000;
             totalAmountDistributed = (totalAmountDistributed * ratio) / 10000;
@@ -49,18 +54,19 @@ contract ULSOperator is Ownable {
             to = refers[to];
         }
 
-        balances[masterWallet] += remainingAmount; // TODO: check with them
+        balances[remainingFundsWallet] += remainingAmount; // TODO: check with them
     }
 
     function purchase(address referer, uint256 amount) public {
+        if (amount < 100e18) revert SmallAmount();
         if (refers[msg.sender] != address(0)) revert AlreadyRefered();
         refers[msg.sender] = referer;
         if (referer == address(0)) revert RefererNotFound(referer);
         if (users[referer] == false) revert RefererNotFound(referer);
+        ulstoken.addChild(referer, msg.sender);
         if (!paymentToken.approve(msg.sender, amount)) revert("Not enough funds");
         paymentToken.transferFrom(msg.sender, address(this), amount);
-        splitFunds(referer, amount);
-        ulstoken.addChild(referer, msg.sender);
+        splitFunds(msg.sender, referer, amount);
         users[msg.sender] = true;
     }
 

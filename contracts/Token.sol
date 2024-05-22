@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./IULSToken.sol";
 
 contract ULSToken is ERC721, IULSToken, Ownable {
-
+    
     uint256 counter = 1;
     string private _baseURIString;
 
@@ -23,7 +23,7 @@ contract ULSToken is ERC721, IULSToken, Ownable {
     }
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        if (tokenId == 0) revert ZeroTokenId();
+        if (tokenId == 0) return string("");
         // hash tokenId and its coresponding state into a uint256 number called identifier
         bytes32 identifier = keccak256(abi.encodePacked(tokenId, states[tokenId]));
         // convert the uint256 number into a string
