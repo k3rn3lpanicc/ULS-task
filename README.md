@@ -33,6 +33,26 @@ Then you can simply deploy to sepolia by running `npm run deploy`, the result sh
 
 Where you can see the deployed contract addresses. Payment token contract is for purchases and ULSOperator is the one we work with and ULSToken is the one which manages the nfts.
 
+### How to run the tests?
+
+In the project folder, open up a terminal and run: `npm run test`, your results should look like this:
+
+```bash
+
+  ULS
+    deployment
+      ✔ should deploy the contracts
+    transfer payment token
+      ✔ should transfer payment token
+    Purchase and become a child
+      ✔ should purchase and become a child
+      ✔ should purchase and become a child: multiple users 1 level
+      ✔ should purchase and become a child: one user multilevel
+
+
+  5 passing (1s)
+```
+
 ## Backend part
 
 ### How to run the backend part?
