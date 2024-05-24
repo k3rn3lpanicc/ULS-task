@@ -71,10 +71,10 @@ describe('ULS', function () {
                 .purchase(owner.address, BigInt(100) * BigInt(10 ** 18));
             expect(await ulsToken.balanceOf(firstUser.address)).to.equal(1);
             expect(await ulsOperator.balances(owner)).to.equal(
-                BigInt(1) * BigInt(10 ** 18)
+                BigInt(44) * BigInt(10 ** 18)
             );
             expect(await ulsOperator.balances(fourthUser)).to.equal(
-                BigInt(99) * BigInt(10 ** 18)
+                BigInt(56) * BigInt(10 ** 18)
             );
         });
         it('should purchase and become a child: multiple users 1 level', async function () {
@@ -131,10 +131,10 @@ describe('ULS', function () {
             expect(await ulsToken.balanceOf(thirdUser.address)).to.equal(1);
 
             expect(await ulsOperator.balances(owner)).to.equal(
-                BigInt(3) * BigInt(10 ** 18)
+                BigInt(132) * BigInt(10 ** 18)
             );
             expect(await ulsOperator.balances(fourthUser)).to.equal(
-                BigInt(99*3) * BigInt(10 ** 18)
+                BigInt(168) * BigInt(10 ** 18)
             );
         });
         it('should purchase and become a child: one user multilevel', async function () {
@@ -191,16 +191,16 @@ describe('ULS', function () {
             expect(await ulsToken.balanceOf(thirdUser.address)).to.equal(1);
 
             expect(await ulsOperator.balances(owner)).to.equal(
-                BigInt(10101) * BigInt(10 ** (18-4)) // these 1s correspond to 3 different purchases
+                BigInt(770000) * BigInt(10 ** (18-4)) // these 1s correspond to 3 different purchases
             );
             expect(await ulsOperator.balances(firstUser)).to.equal(
-                BigInt(9999) * BigInt(10 ** (18 - 4))
+                BigInt(660000) * BigInt(10 ** (18 - 4))
             );
             expect(await ulsOperator.balances(secondUser)).to.equal(
-                BigInt(99) * BigInt(10 ** (18 - 2))
+                BigInt(4400) * BigInt(10 ** (18 - 2))
             );
             expect(await ulsOperator.balances(fourthUser)).to.equal(
-                BigInt(99 * 3) * BigInt(10 ** 18)
+                BigInt(113) * BigInt(10 ** 18)
             );
         });
     });

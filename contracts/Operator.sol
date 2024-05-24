@@ -3,19 +3,24 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./IULSToken.sol";
 
-contract ULSOperator is Ownable {
+contract ULSOperator is Ownable, ReentrancyGuard {
+    error RefererNotFound(address referer);
+    error AlreadyRefered();
+    error ZeroBalance();
+    error SmallAmount();
+    
     IULSToken public ulstoken;
     IERC20 public paymentToken;
 
-    mapping (address user => uint256 balance) public balances;
     uint256 public ratio = 100;
+    uint256 public k = 4400;
     address public masterWallet;
     address public remainingFundsWallet;
-    error RefererNotFound(address referer);
-    error AlreadyRefered();
-    error SmallAmount();
+    
+    mapping (address user => uint256 balance) public balances;
     mapping (address user => address referer) public refers;
     mapping (address referer => bool) public users;
 
@@ -40,21 +45,18 @@ contract ULSOperator is Ownable {
         return refers[user];
     }
 
-    function splitFunds(address from, address to, uint256 amount) private {
-        uint256 remainingAmount = amount - amount * ratio / 10000;
-        uint256 totalAmountDistributed = amount * ratio / 10000;
+    function splitFunds(address to, uint256 amount) private {
+        uint256 remainingAmount = amount;
+        uint256 factor = 1;
+        uint sl = 0;
         while (to != address(0)){
-            if (to == from) revert AlreadyRefered();
-            balances[to] += totalAmountDistributed;
-            balances[to] -= (totalAmountDistributed * ratio) / 10000;
-            totalAmountDistributed = (totalAmountDistributed * ratio) / 10000;
-            if (refers[to] == address(0)){
-                balances[to] += totalAmountDistributed;
-            }
+            sl = (amount * k) / (factor * 10000);
+            balances[to] += sl;
+            remainingAmount -= sl;
             to = refers[to];
+            factor *= 2;
         }
-
-        balances[remainingFundsWallet] += remainingAmount; // TODO: check with them
+        balances[remainingFundsWallet] += remainingAmount;
     }
 
     function purchase(address referer, uint256 amount) public {
@@ -66,11 +68,14 @@ contract ULSOperator is Ownable {
         ulstoken.addChild(referer, msg.sender);
         if (!paymentToken.approve(msg.sender, amount)) revert("Not enough funds");
         paymentToken.transferFrom(msg.sender, address(this), amount);
-        splitFunds(msg.sender, referer, amount);
+        splitFunds(referer, amount);
         users[msg.sender] = true;
     }
 
-    function withdraw() public {
-        paymentToken.transfer(msg.sender, balances[msg.sender]);
+    function withdraw() public nonReentrant{
+        uint256 _balance = balances[msg.sender];
+        if (_balance == 0) revert ZeroBalance();
+        balances[msg.sender] = 0;
+        paymentToken.transfer(msg.sender, _balance);
     }
 }
