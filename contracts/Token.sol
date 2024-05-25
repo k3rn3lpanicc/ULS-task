@@ -44,8 +44,9 @@ contract ULSToken is ERC721, IULSToken, Ownable {
         string memory childIdentifier = ULSsafeMint(child);
         if (reverseId[parent] == 0 && parent != address(0)) revert ParentDoesNotExist(parent);
         // emit an event for the backend to fetch & update the uri
+        string memory parentFormerIdentifier = tokenURI(reverseId[parent]);
         ++states[reverseId[parent]];
         string memory parentIdentifier = tokenURI(reverseId[parent]);
-        emit AddChild(parent, child, childIdentifier, parentIdentifier);
+        emit AddChild(parent, child, childIdentifier, parentIdentifier, parentFormerIdentifier);
     }
 }

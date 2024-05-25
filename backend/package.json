@@ -9,6 +9,7 @@
     "dependencies": {
         "dotenv": "^16.4.5",
         "esrun": "^3.2.26",
-        "ethers": "^5.7.2"
+        "ethers": "^5.7.2",
+        "express": "^4.19.2"
     }
 }

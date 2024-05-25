@@ -6,7 +6,7 @@ interface IULSToken{
     error AlreadyMinted();
     error ParentDoesNotExist(address parent);
 
-    event AddChild(address parent, address child, string childIdentifier, string parentIdentifier);
+    event AddChild(address parent, address child, string childIdentifier, string parentIdentifier, string parentFormerURI);
 
     function addChild(address parent, address child) external;
 }
